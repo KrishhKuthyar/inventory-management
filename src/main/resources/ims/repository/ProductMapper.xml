@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ims.repository.ProductMapper">
+  <!-- insert product -->
+  <insert id="insertProduct"
+    parameterType="ims.entity.Product"
+    useGeneratedKeys="true"
+    keyProperty="id"
+    keyColumn="id">
+    INSERT INTO product_entity (
+        name,
+        category_id,
+        description,
+        image_name,
+        image_path
+    ) VALUES (
+        #{name},
+        #{categoryId},
+        #{description},
+        #{imageName},
+        #{imagePath}
+    )
+  </insert>
+  
+  <!-- get product list -->
+  <select id="getProductList" resultType="ims.entity.Product">
+    SELECT
+        product_entity.id,
+        product_entity.name,
+        product_entity.category_id,
+        price_stock.quantity,
+        price_stock.price,
+        price_stock.stock,
+        product_entity.image_name,
+        product_entity.image_path
+    FROM
+        product_entity
+    INNER JOIN price_stock
+    ON product_entity.id = price_stock.product_id
+    WHERE
+        product_entity.deleted_at IS NULL
+    ORDER BY
+        product_entity.category_id ASC,
+        product_entity.id ASC
+  </select>
+ 
+  <!-- get product -->
+  <select id="getProduct" resultType="ims.entity.Product">
+    SELECT
+        product_entity.id,
+        product_entity.name,
+        product_entity.category_id,
+        price_stock.quantity,
+        price_stock.price,
+        price_stock.stock,
+        product_entity.image_name,
+        product_entity.image_path
+    FROM
+        product_entity
+    INNER JOIN price_stock
+    ON product_entity.id = price_stock.product_id
+    WHERE
+        product_entity.id = #{id}
+    ORDER BY
+        product_entity.category_id ASC,
+        product_entity.id ASC
+  </select>
+  
+  <!-- update product -->
+  <update id="updateProduct" parameterType="ims.entity.Product">
+    UPDATE
+        product_entity
+    SET
+        name = #{name},
+        category_id = #{categoryId},
+        description = #{description},
+        image_name = #{imageName},
+        image_path = #{imagePath},
+        updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id = #{id}
+  </update>
+  
+  <!--  delete product -->
+  <update id="deleteProduct" parameterType="ims.entity.Product">
+    UPDATE
+        product_entity
+    SET
+        updated_at = CURRENT_TIMESTAMP,
+        deleted_at = CURRENT_TIMESTAMP
+    WHERE
+        id = #{id}
+  </update>
+</mapper>
